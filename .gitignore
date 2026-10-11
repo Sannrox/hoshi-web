@@ -1,0 +1,10 @@
+node_modules/
+dist/
+release/
+*.tsbuildinfo
+
+.agents/*
+!.agents/skills/
+
+# Delivery lane worktrees (deliver-ready-issue)
+/.worktrees/
