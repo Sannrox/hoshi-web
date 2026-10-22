@@ -1,0 +1,81 @@
+{
+  "build_queue": [
+    {
+      "building": "metal_mine",
+      "completes_at": 1792691733,
+      "from_level": 1,
+      "index": 0,
+      "kind": "build",
+      "work_left": 0.0
+    },
+    {
+      "building": "solar_plant",
+      "completes_at": null,
+      "from_level": 1,
+      "index": 1,
+      "kind": "build",
+      "work_left": 0.0
+    }
+  ],
+  "buildings": {
+    "crystal_mine": 1,
+    "crystal_storage": 0,
+    "deuterium_storage": 0,
+    "deuterium_synthesizer": 0,
+    "fission_reactor": 0,
+    "fusion_plant": 0,
+    "metal_mine": 1,
+    "metal_storage": 0,
+    "radiator": 0,
+    "research_lab": 0,
+    "robotics_factory": 0,
+    "scrubber": 0,
+    "shipyard": 0,
+    "solar_plant": 1
+  },
+  "events": [
+    {
+      "at": 1792691373,
+      "text": "Crystal mine reached level 2"
+    },
+    {
+      "at": 1792687953,
+      "text": "Pirate raid repelled at 1:1:1"
+    }
+  ],
+  "now": 1792691553,
+  "ok": true,
+  "planets": [
+    {
+      "coord": "1:1:1",
+      "home": true,
+      "rare": null
+    }
+  ],
+  "raid": {
+    "lands_in_secs": 3600
+  },
+  "rates": {
+    "deuterium": 0.0,
+    "helium_3": 0.0,
+    "iron": 33.0,
+    "rare_earths": 2.6072441762443654,
+    "silicon": 22.0,
+    "water_ice": 0.0
+  },
+  "research": {
+    "current": null,
+    "levels": {
+      "energy": 0
+    }
+  },
+  "resources": {
+    "deuterium": 0.0,
+    "helium_3": 0.0,
+    "iron": 323.75,
+    "rare_earths": 0.0,
+    "silicon": 443.0,
+    "water_ice": 0.0
+  },
+  "schema_version": 2
+}

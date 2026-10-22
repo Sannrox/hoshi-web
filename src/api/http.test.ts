@@ -40,6 +40,19 @@ describe("request", () => {
     expect(seen).toBe("Bearer s3cret");
   });
 
+  it("posts a JSON body", async () => {
+    let sent: RequestInit | undefined;
+    await request("v1/build", {
+      body: { planet: "home", building: "metal_mine" },
+      fetcher: async (_, init) => {
+        sent = init;
+        return Response.json({ ok: true });
+      },
+    });
+    expect(sent?.method).toBe("POST");
+    expect(sent?.body).toBe('{"planet":"home","building":"metal_mine"}');
+  });
+
   it("carries hoshi's error code and message", async () => {
     const refused = request("v1/version", {
       fetcher: respond(

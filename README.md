@@ -5,8 +5,17 @@ space-strategy game. It plays through `hoshi serve`'s versioned `/v1` HTTP and
 WebSocket API only (see [ADR 0002](docs/decisions/0002-separate-web-client-api-only.md));
 the game rules live in hoshi.
 
-Status: early. Sign-in works against `hoshi serve`; screens are tracked as issues in this
-repository.
+Status: early. Sign-in and the phone check-in view work against `hoshi serve`; screens are
+tracked as issues in this repository. The client uses the hoshi TUI's Slate colours and widgets
+(`src/ui.tsx`).
+
+## Check-in
+
+The home screen is a phone-sized check-in built from `GET /v1/state` and refreshed every five
+seconds: resources and hourly rates, the raid countdown with its landing time, the build and
+research queue, recent events, and the building list. Tapping a building opens a sheet that is
+the confirm step; **Queue** sends `POST /v1/build` once and shows hoshi's refusal text if it is
+refused.
 
 ## Sign-in
 

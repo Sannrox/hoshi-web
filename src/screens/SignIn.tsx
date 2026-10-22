@@ -55,7 +55,7 @@ export const SignIn = () => {
 
   return (
     <form
-      className="max-w-md"
+      className="max-w-md px-2"
       onSubmit={(event) => {
         event.preventDefault();
         verify.mutate(token.trim());
