@@ -30,24 +30,34 @@ export class ApiError extends Error {
   }
 }
 
-type RequestOptions = { token?: string; fetcher?: typeof fetch };
+type RequestOptions = { token?: string | undefined; body?: object; fetcher?: typeof fetch };
 
-/** Typed JSON GET against the hoshi API, with the bearer token when there is one. */
+/**
+ * Typed JSON call against the hoshi API, with the bearer token when there is one.
+ * A `body` makes it a POST; callers send game actions once and never retry them.
+ */
 export const request = async <T>(
   path: string,
-  { token, fetcher = fetch }: RequestOptions = {},
+  { token, body, fetcher = fetch }: RequestOptions = {},
 ): Promise<T> => {
   const headers: Record<string, string> = { accept: "application/json" };
   if (token) {
     headers.authorization = `Bearer ${token}`;
   }
-  const response = await fetcher(new URL(path, apiRoot), { headers });
+  if (body) {
+    headers["content-type"] = "application/json";
+  }
+  const response = await fetcher(new URL(path, apiRoot), {
+    method: body ? "POST" : "GET",
+    headers,
+    ...(body && { body: JSON.stringify(body) }),
+  });
   if (!response.ok) {
-    const body = (await response.json().catch(() => undefined)) as ServeResponse | undefined;
+    const failure = (await response.json().catch(() => undefined)) as ServeResponse | undefined;
     throw new ApiError(
       response.status,
-      body?.error?.code,
-      body?.error?.message ?? `${path}: HTTP ${response.status}`,
+      failure?.error?.code,
+      failure?.error?.message ?? `${path}: HTTP ${response.status}`,
     );
   }
   return (await response.json()) as T;

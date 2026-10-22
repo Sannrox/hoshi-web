@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { createRootRoute, createRoute, createRouter, Outlet } from "@tanstack/react-router";
 import { checkServer, consoleRoot } from "./api/http";
+import { CheckIn } from "./screens/CheckIn";
 import { SignIn } from "./screens/SignIn";
 import { useSession } from "./session";
 import { Button, Navbar } from "./ui";
@@ -24,15 +25,19 @@ const Root = () => {
   return (
     <div className="flex min-h-dvh flex-col">
       <Navbar
-        crumbs={[token ? "Home" : "Sign in"]}
+        crumbs={[token ? "Check-in" : "Sign in"]}
         right={
           <>
             <span className="text-muted">{server.data.version}</span>
-            {token && <Button onClick={() => signOut()}>Sign out</Button>}
+            {token && (
+              <Button className="min-h-11" onClick={() => signOut()}>
+                Sign out
+              </Button>
+            )}
           </>
         }
       />
-      <main className="p-2">{token ? <Outlet /> : <SignIn />}</main>
+      <main className="py-2">{token ? <Outlet /> : <SignIn />}</main>
     </div>
   );
 };
@@ -42,7 +47,7 @@ const rootRoute = createRootRoute({ component: Root });
 const indexRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/",
-  component: () => <p>Signed in.</p>,
+  component: CheckIn,
 });
 
 export const router = createRouter({

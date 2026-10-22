@@ -7,7 +7,7 @@ import type { ButtonHTMLAttributes, ReactNode } from "react";
 
 /** Top bar: `◆ hoshi │ crumbs`, with `right` flush right. */
 export const Navbar = ({ crumbs, right }: { crumbs: string[]; right?: ReactNode }) => (
-  <header className="flex items-center gap-2 bg-raised px-2 py-1">
+  <header className="flex min-h-11 items-center gap-2 bg-raised px-2">
     <span className="font-bold text-primary">◆ hoshi</span>
     <span className="text-line">│</span>
     {crumbs.map((crumb, i) => (
