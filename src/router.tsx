@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { createRootRoute, createRoute, createRouter, Outlet } from "@tanstack/react-router";
 import { checkServer, consoleRoot } from "./api/http";
-import { CheckIn } from "./screens/CheckIn";
+import { CheckIn, OfflineCheckIn } from "./screens/CheckIn";
 import { SignIn } from "./screens/SignIn";
 import { useSession } from "./session";
 import { Button, Navbar } from "./ui";
@@ -15,9 +15,11 @@ const Root = () => {
     queryFn: () => checkServer(),
     staleTime: Number.POSITIVE_INFINITY,
     retry: false,
+    // Unreachable: keep trying, so the client leaves the offline view on its own.
+    refetchInterval: (query) => (query.state.error ? 10_000 : false),
   });
   if (!server.data) {
-    return <p>{server.error ? `Could not load: ${server.error.message}` : "Connecting"}</p>;
+    return server.error ? <OfflineCheckIn error={server.error} /> : <p>Connecting</p>;
   }
   if (server.data.kind !== "ready") {
     return <p>hoshi {server.data.version} is too old for this client.</p>;

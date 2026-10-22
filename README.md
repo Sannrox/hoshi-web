@@ -17,6 +17,14 @@ research queue, recent events, and the building list. Tapping a building opens a
 the confirm step; **Queue** sends `POST /v1/build` once and shows hoshi's refusal text if it is
 refused.
 
+## Offline and install
+
+The client is an installable web app (`public/manifest.webmanifest`). Its service worker
+(`public/sw.js`) caches only the app's own files under `ui/`; hoshi's API sits outside its scope
+and is never cached. The last check-in state is kept in browser storage (never the token) and
+cleared on sign-out. When hoshi cannot be reached, the client opens on that state, greyed and
+marked with its age, shows due times instead of countdowns, and turns every action off.
+
 ## Sign-in
 
 Paste a bearer token that `hoshi serve` accepts, or use **Identity login** when the
