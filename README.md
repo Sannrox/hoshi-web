@@ -36,8 +36,44 @@ not expire, so a 401 ends the session instead of refreshing it.
 ## How it ships
 
 Each tag `vX.Y.Z` publishes `hoshi-web-vX.Y.Z.zip`, `SHA256SUMS`, and a GitHub artifact
-attestation. `hoshi serve` can pin one release by URL and SHA-256 and serve it at `/ui/`.
-The build uses only relative URLs and loads no assets from other origins.
+attestation (`.github/workflows/release.yml`). hoshi is to pin one release and serve it at
+`/ui/` on the API's origin; that server side is tracked in
+[Sannrox/hoshi#260](https://github.com/Sannrox/hoshi/issues/260).
+
+The zip holds the built client at its root: `index.html`, `assets/`, `sw.js`,
+`manifest.webmanifest` and icons. Serve them at `<base>/ui/` with the API at `<base>/v1` and
+`<base>/healthz`; the client finds the API two levels above its own entry module, so the same
+zip works at `/ui/` and at `/<prefix>/ui/` behind a reverse proxy. It loads nothing from other
+origins. A server serving it should:
+
+- fall back to `index.html` for unknown paths under `ui/` that are not files;
+- send `sw.js` as JavaScript and `manifest.webmanifest` as `application/manifest+json`;
+- allow a strict policy: `Content-Security-Policy: default-src 'self'` (no inline scripts,
+  no `eval`).
+
+### Verify and pin a release
+
+```sh
+tag=vX.Y.Z
+gh release download "$tag" -R Sannrox/hoshi-web
+sha256sum -c SHA256SUMS
+gh attestation verify "hoshi-web-$tag.zip" -R Sannrox/hoshi-web
+```
+
+The pin is one line, `<tag> <sha256-of-zip>`, taken from `SHA256SUMS`. The download URL
+follows from the tag:
+`https://github.com/Sannrox/hoshi-web/releases/download/<tag>/hoshi-web-<tag>.zip`. Bumping the
+client is a one-line pin change; a mismatched checksum must refuse the bundle.
+
+The zip is built to be reproducible: `scripts/package.sh` sorts entries and fixes timestamps,
+so rebuilding a tag with `pnpm build && VERSION=<tag> pnpm package` on the same Node and
+lockfile should give the same checksum.
+
+### Compatibility
+
+A release requires a hoshi whose `/healthz` lists `v1` in `contract_versions`; older servers
+get a "too old" notice. `api/HOSHI_REF` names the hoshi commit whose `/v1` schemas the release
+was built against.
 
 ## API types
 
