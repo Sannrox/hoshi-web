@@ -1,1 +1,26 @@
 @import "tailwindcss";
+
+/* hoshi TUI "Slate" roles (crates/hoshi-tui/src/ui/theme.rs), so the web client looks like the TUI. */
+@theme {
+  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --color-base: #1c2127;
+  --color-raised: #252a31;
+  --color-header: #2f343c;
+  --color-dimmed: #15181d;
+  --color-line: #404854;
+  --color-text: #f6f7f9;
+  --color-muted: #abb3bf;
+  --color-label: #738091;
+  --color-faint: #3a414b;
+  --color-primary: #4c90f0;
+  --color-primary-fill: #2d72d2;
+  --color-selection: #1f3b5e;
+  --color-success: #32a467;
+  --color-warning: #ec9a3c;
+  --color-danger: #e76a6e;
+  --color-key: #383e47;
+}
+
+body {
+  @apply bg-base font-mono text-sm text-text;
+}

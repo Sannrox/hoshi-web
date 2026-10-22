@@ -5,9 +5,16 @@ space-strategy game. It plays through `hoshi serve`'s versioned `/v1` HTTP and
 WebSocket API only (see [ADR 0002](docs/decisions/0002-separate-web-client-api-only.md));
 the game rules live in hoshi.
 
-Status: skeleton. The server it needs is tracked in
-[Sannrox/hoshi#68](https://github.com/Sannrox/hoshi/issues/68); screens are tracked as
-issues in this repository.
+Status: early. Sign-in works against `hoshi serve`; screens are tracked as issues in this
+repository.
+
+## Sign-in
+
+Paste a bearer token that `hoshi serve` accepts, or use **Identity login** when the
+operator turned on hoshi's identity login. That opens hoshi's login in a window; when the
+window ends on this client's origin the token is read back automatically, otherwise paste
+the token it shows. The token lives in memory only: a reload signs out. hoshi's tokens do
+not expire, so a 401 ends the session instead of refreshing it.
 
 ## How it ships
 
@@ -17,9 +24,10 @@ The build uses only relative URLs and loads no assets from other origins.
 
 ## API types
 
-`api/hoshi-http-v1.schema.json` is hoshi's HTTP contract, vendored at the commit in
-`api/HOSHI_REF`. Until hoshi publishes one, it holds a draft with only `/healthz`.
-`src/api/hoshi.gen.ts` is generated from it.
+`api/serve-v1.json` and `api/cli-v1.json` are hoshi's `/v1` response schemas
+(`docs/schema/` in hoshi), vendored at the commit in `api/HOSHI_REF`.
+`src/api/hoshi.gen.ts` is generated from them. `/healthz` must list `v1` in
+`contract_versions`.
 
 ```sh
 pnpm api:sync <hoshi-commit-sha>   # update the vendored schema and regenerate
