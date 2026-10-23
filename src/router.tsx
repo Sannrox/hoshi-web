@@ -1,5 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
-import { createRootRoute, createRoute, createRouter, Outlet } from "@tanstack/react-router";
+import {
+  createRootRoute,
+  createRoute,
+  createRouter,
+  lazyRouteComponent,
+  Link,
+  Outlet,
+  useMatchRoute,
+} from "@tanstack/react-router";
 import { checkServer, consoleRoot } from "./api/http";
 import { CheckIn, OfflineCheckIn } from "./screens/CheckIn";
 import { SignIn } from "./screens/SignIn";
@@ -10,6 +18,8 @@ import { Button, Navbar } from "./ui";
 const Root = () => {
   const token = useSession((s) => s.token);
   const signOut = useSession((s) => s.signOut);
+  // The terminal fills the window; other screens scroll the page.
+  const onTerminal = Boolean(useMatchRoute()({ to: "/terminal" }));
   const server = useQuery({
     queryKey: ["server"],
     queryFn: () => checkServer(),
@@ -25,12 +35,20 @@ const Root = () => {
     return <p>hoshi {server.data.version} is too old for this client.</p>;
   }
   return (
-    <div className="flex min-h-dvh flex-col">
+    <div className={`flex flex-col ${onTerminal ? "h-dvh" : "min-h-dvh"}`}>
       <Navbar
-        crumbs={[token ? "Check-in" : "Sign in"]}
+        crumbs={[token ? (onTerminal ? "Terminal" : "Check-in") : "Sign in"]}
         right={
           <>
             <span className="text-muted">{server.data.version}</span>
+            {token && (
+              <Link
+                to={onTerminal ? "/" : "/terminal"}
+                className="flex min-h-11 items-center bg-key px-2"
+              >
+                {onTerminal ? "Check-in" : "Terminal"}
+              </Link>
+            )}
             {token && (
               <Button className="min-h-11" onClick={() => signOut()}>
                 Sign out
@@ -39,7 +57,9 @@ const Root = () => {
           </>
         }
       />
-      <main className="py-2">{token ? <Outlet /> : <SignIn />}</main>
+      <main className={`py-2 ${onTerminal ? "flex min-h-0 flex-1 flex-col" : ""}`}>
+        {token ? <Outlet /> : <SignIn />}
+      </main>
     </div>
   );
 };
@@ -52,8 +72,15 @@ const indexRoute = createRoute({
   component: CheckIn,
 });
 
+const terminalRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/terminal",
+  // xterm is large; only players who open the terminal download it.
+  component: lazyRouteComponent(() => import("./screens/Terminal"), "Terminal"),
+});
+
 export const router = createRouter({
-  routeTree: rootRoute.addChildren([indexRoute]),
+  routeTree: rootRoute.addChildren([indexRoute, terminalRoute]),
   basepath: consoleRoot.pathname,
 });
 

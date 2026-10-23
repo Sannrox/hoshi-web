@@ -5,9 +5,9 @@ space-strategy game. It plays through `hoshi serve`'s versioned `/v1` HTTP and
 WebSocket API only (see [ADR 0002](docs/decisions/0002-separate-web-client-api-only.md));
 the game rules live in hoshi.
 
-Status: early. Sign-in and the phone check-in view work against `hoshi serve`; screens are
-tracked as issues in this repository. The client uses the hoshi TUI's Slate colours and widgets
-(`src/ui.tsx`).
+Status: early. Sign-in, the phone check-in view and the browser terminal work against
+`hoshi serve`; screens are tracked as issues in this repository. The client uses the hoshi
+TUI's Slate colours and widgets (`src/ui.tsx`).
 
 ## Check-in
 
@@ -16,6 +16,15 @@ seconds: resources and hourly rates, the raid countdown with its landing time, t
 research queue, recent events, and the building list. Tapping a building opens a sheet that is
 the confirm step; **Queue** sends `POST /v1/build` once and shows hoshi's refusal text if it is
 refused.
+
+## Terminal
+
+**Terminal** in the top bar runs hoshi's own TUI in the browser, drawn by `hoshi serve` over
+`GET /v1/terminal`; it is the game, not a shell. While it is attached hoshi keeps one writer
+per save, so game actions from other screens (and a second terminal) are refused. Quitting the
+TUI or leaving the screen frees the save at once. A dropped connection reattaches on its own
+for 30 seconds, once hoshi's short hold on the dropped session ends; keys typed meanwhile are
+not sent. The terminal code loads only when the screen opens.
 
 ## Offline and install
 

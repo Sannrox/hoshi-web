@@ -11,6 +11,6 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   build: { outDir: "dist", assetsDir: "assets" },
   server: {
-    proxy: { "/v1": hoshi, "/healthz": hoshi },
+    proxy: { "/v1": { target: hoshi, ws: true }, "/healthz": hoshi },
   },
 });
