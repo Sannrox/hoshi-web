@@ -83,3 +83,30 @@ export const Callout = ({
     ▌ {children}
   </p>
 );
+
+/**
+ * TUI pane: `▦ title  subtitle` header bar over a raised body. `id` makes it a
+ * jump target: it takes focus so alerts can move the keyboard there.
+ */
+export const Panel = ({
+  id,
+  title,
+  subtitle,
+  children,
+}: {
+  id: string;
+  title: string;
+  subtitle?: ReactNode;
+  children: ReactNode;
+}) => (
+  <section id={id} tabIndex={-1} aria-label={title} className="flex flex-col bg-raised">
+    <div className="flex gap-3 bg-header px-2 py-1">
+      <span>
+        <span className="text-primary">▦ </span>
+        <span className="font-bold">{title}</span>
+      </span>
+      {subtitle && <span className="ml-auto text-muted">{subtitle}</span>}
+    </div>
+    <div className="flex flex-col p-2">{children}</div>
+  </section>
+);

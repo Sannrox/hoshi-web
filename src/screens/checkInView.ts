@@ -56,6 +56,8 @@ export const humanize = (key: string) => {
 
 export type QueueSlot = {
   key: string;
+  /** The `POST /v1/cancel` item: `research`, or the build queue index. */
+  item: string;
   kind: "build" | "dismantle" | "research";
   label: string;
   /** Client-clock ms; undefined while the slot waits behind another. */
@@ -74,6 +76,7 @@ export const readCheckIn = (raw: unknown, fetchedAt: number) => {
   const at = (unix: number | null) => (unix === null ? undefined : clock(unix));
   const builds = state.build_queue.map((job): QueueSlot => ({
     key: `build-${job.index}`,
+    item: String(job.index),
     kind: job.kind === "dismantle" ? "dismantle" : "build",
     label:
       job.kind === "dismantle"
@@ -95,6 +98,7 @@ export const readCheckIn = (raw: unknown, fetchedAt: number) => {
           ...builds,
           {
             key: "research",
+            item: "research",
             kind: "research" as const,
             label: `${humanize(research.tech)} ${research.from_level + 1}`,
             endsAt: at(research.completes_at),

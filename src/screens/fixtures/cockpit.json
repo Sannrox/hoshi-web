@@ -1,0 +1,107 @@
+{
+  "schema_version": 2,
+  "ok": true,
+  "now": 1792760042,
+  "resources": {
+    "deuterium": 0.0,
+    "helium_3": 0.0,
+    "iron": 464.2083333333394,
+    "rare_earths": 1.284960812304426,
+    "silicon": 505.04722222223654,
+    "water_ice": 0.0
+  },
+  "rates": {
+    "deuterium": 0.0,
+    "helium_3": 0.0,
+    "iron": 49.5,
+    "rare_earths": 5.120669926737979,
+    "silicon": 22.0,
+    "water_ice": 0.0
+  },
+  "energy": {
+    "consumed": 21.0,
+    "factor": 1.0,
+    "produced": 22.0
+  },
+  "heat": {
+    "load": 23.4,
+    "sink": 80.0
+  },
+  "buildings": {
+    "crystal_mine": 1,
+    "crystal_storage": 0,
+    "deuterium_storage": 0,
+    "deuterium_synthesizer": 0,
+    "fission_reactor": 0,
+    "fusion_plant": 0,
+    "metal_mine": 2,
+    "metal_storage": 0,
+    "radiator": 0,
+    "research_lab": 0,
+    "robotics_factory": 0,
+    "scrubber": 0,
+    "shipyard": 0,
+    "solar_plant": 1
+  },
+  "build_queue": [],
+  "research": {
+    "current": null,
+    "levels": {
+      "ancient_drive": 0,
+      "ancient_weapon": 0,
+      "armour": 0,
+      "armour_doctrine": 0
+    }
+  },
+  "fleet": {
+    "espionage_probe": 0,
+    "light_fighter": 3,
+    "small_cargo": 0
+  },
+  "missions": [
+    {
+      "id": 7,
+      "origin": "1:1:1",
+      "dest": "1:28:4",
+      "phase": "outbound",
+      "phase_ends_at": 1792760642
+    }
+  ],
+  "planets": [
+    {
+      "coord": "1:1:1",
+      "home": true,
+      "rare": null
+    }
+  ],
+  "outposts": [
+    {
+      "coord": "1:75:7",
+      "rare": null,
+      "report": null
+    },
+    {
+      "coord": "1:66:5",
+      "rare": null,
+      "report": null
+    },
+    {
+      "coord": "1:72:4",
+      "rare": null,
+      "report": null
+    }
+  ],
+  "raid": {
+    "lands_in_secs": 1200
+  },
+  "events": [
+    {
+      "at": 1792759412,
+      "text": "daily: Upgrade a mine complete"
+    },
+    {
+      "at": 1792759412,
+      "text": "achievement: First cut"
+    }
+  ]
+}

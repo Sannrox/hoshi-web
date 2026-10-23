@@ -4,10 +4,11 @@ import { Terminal as Xterm } from "@xterm/xterm";
 import "@xterm/xterm/css/xterm.css";
 import { useEffect, useRef, useState } from "react";
 import { ApiError, apiRoot } from "../api/http";
+import { socketUrl } from "../api/socket";
 import { useSession, verifyToken } from "../session";
 import { Button, Callout } from "../ui";
 import { cspDocument } from "./cspDocument";
-import { type LinkStatus, linkTerminal, terminalUrl } from "./terminalLink";
+import { type LinkStatus, linkTerminal } from "./terminalLink";
 
 // Slate roles from styles.css, so the terminal matches the TUI it draws.
 const theme = { background: "#1c2127", foreground: "#f6f7f9", cursor: "#4c90f0" };
@@ -63,7 +64,7 @@ const Session = ({ token, restart }: { token: string; restart: () => void }) => 
     term.loadAddon(fit);
     term.open(element);
     const link = linkTerminal({
-      url: terminalUrl(apiRoot),
+      url: socketUrl("v1/terminal", apiRoot),
       token,
       onOutput: (bytes) => term.write(bytes),
       onStatus: setStatus,

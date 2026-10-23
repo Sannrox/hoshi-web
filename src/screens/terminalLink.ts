@@ -5,20 +5,7 @@
  * (quit, idle) and holds the save for a short grace period when a socket drops.
  */
 
-/** `<api>/v1/terminal` as a WebSocket URL, so a proxy prefix carries over. */
-export const terminalUrl = (apiRoot: URL) => {
-  const url = new URL("v1/terminal", apiRoot);
-  url.protocol = url.protocol === "https:" ? "wss:" : "ws:";
-  return url;
-};
-
-/** Browsers cannot set `Authorization` on a socket: hoshi reads the token from a subprotocol. */
-export const bearerProtocols = (token: string) => {
-  const bytes = new TextEncoder().encode(token);
-  const base64 = btoa(String.fromCharCode(...bytes));
-  const base64url = base64.replaceAll("+", "-").replaceAll("/", "_").replace(/=+$/, "");
-  return ["hoshi.v1", `hoshi.bearer.${base64url}`];
-};
+import { bearerProtocols, type OpenSocket, openSocket, type Socket } from "../api/socket";
 
 /**
  * - `connecting`/`reconnecting`: no socket is open; keys are dropped, never queued.
@@ -29,9 +16,6 @@ export const bearerProtocols = (token: string) => {
  */
 export type LinkStatus = "connecting" | "attached" | "reconnecting" | "ended" | "refused";
 
-/** The part of `WebSocket` the link uses, so tests can drive it. */
-export type Socket = Pick<WebSocket, "send" | "close" | "binaryType" | "addEventListener">;
-
 /** How often a dropped session tries to reattach, and how long attaching may take. hoshi's grace is 10 s. */
 export const RETRY_MS = 2_000;
 export const GIVE_UP_MS = 30_000;
@@ -41,7 +25,7 @@ type LinkOptions = {
   token: string;
   onOutput: (bytes: Uint8Array) => void;
   onStatus: (status: LinkStatus) => void;
-  open?: (url: URL, protocols: string[]) => Socket;
+  open?: OpenSocket;
 };
 
 /**
@@ -53,7 +37,7 @@ export const linkTerminal = ({
   token,
   onOutput,
   onStatus,
-  open = (target, protocols) => new WebSocket(target, protocols),
+  open = openSocket,
 }: LinkOptions) => {
   let socket: Socket | undefined;
   let attached = false;

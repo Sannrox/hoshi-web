@@ -10,16 +10,26 @@ import {
 } from "@tanstack/react-router";
 import { checkServer, consoleRoot } from "./api/http";
 import { CheckIn, OfflineCheckIn } from "./screens/CheckIn";
+import { Cockpit } from "./screens/Cockpit";
 import { SignIn } from "./screens/SignIn";
 import { useSession } from "./session";
 import { Button, Navbar } from "./ui";
+
+/** Screens in the top bar: the phone check-in, the wide cockpit, and hoshi's own TUI. */
+const screens = [
+  { to: "/", label: "Check-in" },
+  { to: "/cockpit", label: "Cockpit" },
+  { to: "/terminal", label: "Terminal" },
+] as const;
 
 /** Gate every screen on a reachable, compatible hoshi server and a signed-in session. */
 const Root = () => {
   const token = useSession((s) => s.token);
   const signOut = useSession((s) => s.signOut);
+  const matchRoute = useMatchRoute();
+  const current = screens.find((screen) => matchRoute({ to: screen.to })) ?? screens[0];
   // The terminal fills the window; other screens scroll the page.
-  const onTerminal = Boolean(useMatchRoute()({ to: "/terminal" }));
+  const onTerminal = current.to === "/terminal";
   const server = useQuery({
     queryKey: ["server"],
     queryFn: () => checkServer(),
@@ -37,18 +47,22 @@ const Root = () => {
   return (
     <div className={`flex flex-col ${onTerminal ? "h-dvh" : "min-h-dvh"}`}>
       <Navbar
-        crumbs={[token ? (onTerminal ? "Terminal" : "Check-in") : "Sign in"]}
+        crumbs={[token ? current.label : "Sign in"]}
         right={
           <>
-            <span className="text-muted">{server.data.version}</span>
-            {token && (
-              <Link
-                to={onTerminal ? "/" : "/terminal"}
-                className="flex min-h-11 items-center bg-key px-2"
-              >
-                {onTerminal ? "Check-in" : "Terminal"}
-              </Link>
-            )}
+            <span className="hidden text-muted sm:inline">{server.data.version}</span>
+            {token &&
+              screens
+                .filter((screen) => screen !== current)
+                .map((screen) => (
+                  <Link
+                    key={screen.to}
+                    to={screen.to}
+                    className="flex min-h-11 items-center bg-key px-2"
+                  >
+                    {screen.label}
+                  </Link>
+                ))}
             {token && (
               <Button className="min-h-11" onClick={() => signOut()}>
                 Sign out
@@ -72,6 +86,12 @@ const indexRoute = createRoute({
   component: CheckIn,
 });
 
+const cockpitRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/cockpit",
+  component: Cockpit,
+});
+
 const terminalRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/terminal",
@@ -80,7 +100,7 @@ const terminalRoute = createRoute({
 });
 
 export const router = createRouter({
-  routeTree: rootRoute.addChildren([indexRoute, terminalRoute]),
+  routeTree: rootRoute.addChildren([indexRoute, cockpitRoute, terminalRoute]),
   basepath: consoleRoot.pathname,
 });
 

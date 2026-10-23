@@ -17,11 +17,12 @@ describe("readCheckIn", () => {
     expect(view.queue).toStrictEqual([
       {
         key: "build-0",
+        item: "0",
         kind: "build",
         label: "Metal mine 2",
         endsAt: fetchedAt + (completesAt - state.now) * 1000,
       },
-      { key: "build-1", kind: "build", label: "Solar plant 2", endsAt: undefined },
+      { key: "build-1", item: "1", kind: "build", label: "Solar plant 2", endsAt: undefined },
     ]);
   });
 
