@@ -1,13 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import {
-  bearerProtocols,
-  GIVE_UP_MS,
-  type LinkStatus,
-  linkTerminal,
-  RETRY_MS,
-  type Socket,
-  terminalUrl,
-} from "./terminalLink";
+import type { Socket } from "../api/socket";
+import { GIVE_UP_MS, type LinkStatus, linkTerminal, RETRY_MS } from "./terminalLink";
 
 /** A socket the test opens, feeds and closes by hand. */
 class FakeSocket extends EventTarget {
@@ -47,18 +40,6 @@ const setup = () => {
 
 beforeEach(() => vi.useFakeTimers());
 afterEach(() => vi.useRealTimers());
-
-describe("terminalUrl", () => {
-  it("keeps a proxy prefix and switches to wss under https", () => {
-    expect(terminalUrl(new URL("https://host/p/")).href).toBe("wss://host/p/v1/terminal");
-  });
-});
-
-describe("bearerProtocols", () => {
-  it("sends the token base64url-encoded without padding next to hoshi.v1", () => {
-    expect(bearerProtocols("a?b>")).toStrictEqual(["hoshi.v1", "hoshi.bearer.YT9iPg"]);
-  });
-});
 
 describe("linkTerminal", () => {
   it("drops keys until attached, then sends them as bytes after the size", () => {

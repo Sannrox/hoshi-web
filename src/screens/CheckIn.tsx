@@ -1,28 +1,11 @@
-import {
-  onlineManager,
-  useIsMutating,
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
-import { useEffect, useState, useSyncExternalStore } from "react";
+import { useIsMutating, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
 import { request } from "../api/http";
 import { loadState, saveState } from "../lastState";
 import { useSession } from "../session";
 import { Button, Callout, Dialog, Navbar, Section } from "../ui";
 import { type CheckIn as Model, compact, duration, readCheckIn } from "./checkInView";
-
-/** Re-render every `everyMs` so countdowns tick between fetches. */
-const useNow = (everyMs = 1000) => {
-  const [now, setNow] = useState(Date.now);
-  useEffect(() => {
-    const timer = setInterval(() => setNow(Date.now()), everyMs);
-    return () => clearInterval(timer);
-  }, [everyMs]);
-  return now;
-};
-
-const clockTime = (ms: number) => new Date(ms).toLocaleTimeString([], { hourCycle: "h23" });
+import { clockTime, FRESH_MS, useNow, useOnline } from "./live";
 
 type Building = Model["buildings"][number];
 
@@ -233,15 +216,6 @@ const CheckInBody = ({
     </div>
   );
 };
-
-const useOnline = () =>
-  useSyncExternalStore(
-    (notify) => onlineManager.subscribe(notify),
-    () => onlineManager.isOnline(),
-  );
-
-/** Actions need a state hoshi confirmed within this window (three refreshes). */
-const FRESH_MS = 15_000;
 
 /**
  * Live check-in for the signed-in player; every fetched state is saved for offline use.

@@ -5,8 +5,8 @@ space-strategy game. It plays through `hoshi serve`'s versioned `/v1` HTTP and
 WebSocket API only (see [ADR 0002](docs/decisions/0002-separate-web-client-api-only.md));
 the game rules live in hoshi.
 
-Status: early. Sign-in, the phone check-in view and the browser terminal work against
-`hoshi serve`; screens are tracked as issues in this repository. The client uses the hoshi
+Status: early. Sign-in, the phone check-in view, the cockpit and the browser terminal work
+against `hoshi serve`; screens are tracked as issues in this repository. The client uses the hoshi
 TUI's Slate colours and widgets (`src/ui.tsx`).
 
 ## Check-in
@@ -16,6 +16,16 @@ seconds: resources and hourly rates, the raid countdown with its landing time, t
 research queue, recent events, and the building list. Tapping a building opens a sheet that is
 the confirm step; **Queue** sends `POST /v1/build` once and shows hoshi's refusal text if it is
 refused.
+
+## Cockpit
+
+**Cockpit** is the wide-screen dashboard after hoshi's TUI cockpit: resources, energy, heat and
+the raid countdown in one strip; an alerts bar (threats first, then idle queues) whose entries
+jump to their panel; buildings and research with one action per row; the build and research
+queue with cancel; docked ships, a send form and missions in flight; known worlds; and a
+timeline of hoshi's events. It follows `GET /v1/events` (resuming from the last event after a
+drop) and refreshes the state on every event and every five seconds. Each action is sent once
+and shows hoshi's refusal text; actions are off while the state is not freshly confirmed.
 
 ## Terminal
 
