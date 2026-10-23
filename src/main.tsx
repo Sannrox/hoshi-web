@@ -2,11 +2,12 @@ import { MutationCache, QueryCache, QueryClient, QueryClientProvider } from "@ta
 import { RouterProvider } from "@tanstack/react-router";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { ApiError, consoleRoot } from "./api/http";
+import { ApiError } from "./api/http";
 import { clearState } from "./lastState";
 import { router } from "./router";
 import { useSession } from "./session";
 import "./styles.css";
+import { worker } from "./worker";
 
 const root = document.getElementById("root");
 if (!root) {
@@ -35,12 +36,18 @@ useSession.subscribe((session, previous) => {
   }
 });
 
-// The app-shell worker makes the installed client open offline (see public/sw.js).
-if (!import.meta.env.DEV && "serviceWorker" in navigator) {
-  navigator.serviceWorker.register(new URL("sw.js", consoleRoot)).catch((error: unknown) => {
-    console.warn("hoshi-web: offline support unavailable", error);
+// A tapped notification in an open window: switch screens in place (see sw.js).
+void worker.then((registration) => {
+  if (!registration) {
+    return;
+  }
+  navigator.serviceWorker.addEventListener("message", (event: MessageEvent<unknown>) => {
+    const { data } = event;
+    if (typeof data === "object" && data !== null && "type" in data && data.type === "hoshi-open") {
+      void router.navigate({ to: "view" in data && data.view === "cockpit" ? "/cockpit" : "/" });
+    }
   });
-}
+});
 
 createRoot(root).render(
   <StrictMode>

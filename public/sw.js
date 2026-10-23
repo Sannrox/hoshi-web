@@ -115,3 +115,47 @@ self.addEventListener("fetch", (event) => {
   const path = request.url.slice(self.registration.scope.length);
   event.respondWith(path.startsWith("assets/") ? cacheFirst(request) : networkFirst(request));
 });
+
+// Web push from hoshi serve (see src/push.ts). Payloads are
+// `{"kind","title","body","url"}`; `url` names hoshi's view, mapped here to this
+// client's screens: raids open the cockpit, finished builds the check-in.
+const VIEWS = { "#/bridge": "cockpit", "#/colony": "" };
+
+self.addEventListener("push", (event) => {
+  let notice;
+  try {
+    notice = event.data?.json() ?? {};
+  } catch {
+    notice = { body: event.data?.text() };
+  }
+  event.waitUntil(
+    self.registration.showNotification(notice.title || "hoshi", {
+      body: notice.body,
+      // A newer raid warning replaces the last one instead of stacking.
+      tag: notice.kind,
+      icon: new URL("icon-192.png", self.registration.scope).href,
+      data: { view: VIEWS[notice.url] ?? "" },
+    }),
+  );
+});
+
+// Open the notice's screen: in an open window without reloading it (a reload
+// would sign out, the token lives in memory), otherwise in a new one.
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+  const view = event.notification.data?.view ?? "";
+  event.waitUntil(
+    (async () => {
+      const windows = await self.clients.matchAll({ type: "window", includeUncontrolled: true });
+      const open = windows.find((client) => inScope(client.url));
+      if (open) {
+        await open.focus();
+        // A service worker Client's postMessage has no target origin argument.
+        // oxlint-disable-next-line unicorn/require-post-message-target-origin
+        open.postMessage({ type: "hoshi-open", view });
+        return;
+      }
+      await self.clients.openWindow(new URL(view, self.registration.scope).href);
+    })(),
+  );
+});

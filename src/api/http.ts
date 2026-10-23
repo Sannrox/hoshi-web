@@ -30,7 +30,13 @@ export class ApiError extends Error {
   }
 }
 
-type RequestOptions = { token?: string | undefined; body?: object; fetcher?: typeof fetch };
+type RequestOptions = {
+  token?: string | undefined;
+  body?: object;
+  /** Only `DELETE` needs saying: a `body` alone makes it a POST. */
+  method?: "DELETE";
+  fetcher?: typeof fetch;
+};
 
 /**
  * Typed JSON call against the hoshi API, with the bearer token when there is one.
@@ -38,7 +44,7 @@ type RequestOptions = { token?: string | undefined; body?: object; fetcher?: typ
  */
 export const request = async <T>(
   path: string,
-  { token, body, fetcher = fetch }: RequestOptions = {},
+  { token, body, method, fetcher = fetch }: RequestOptions = {},
 ): Promise<T> => {
   const headers: Record<string, string> = { accept: "application/json" };
   if (token) {
@@ -48,7 +54,7 @@ export const request = async <T>(
     headers["content-type"] = "application/json";
   }
   const response = await fetcher(new URL(path, apiRoot), {
-    method: body ? "POST" : "GET",
+    method: method ?? (body ? "POST" : "GET"),
     headers,
     ...(body && { body: JSON.stringify(body) }),
   });
