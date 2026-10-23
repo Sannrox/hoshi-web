@@ -44,6 +44,17 @@ and is never cached. The last check-in state is kept in browser storage (never t
 cleared on sign-out. When hoshi cannot be reached, the client opens on that state, greyed and
 marked with its age, shows due times instead of countdowns, and turns every action off.
 
+## Notifications
+
+**Notifications** at the bottom of the check-in opts this device in to hoshi's web push: raid
+warnings and finished builds, delivered by the service worker even with hoshi closed. Turning
+on asks the browser for permission, subscribes with the key from `GET /v1/push/key` and
+registers the subscription with `POST /v1/push/subscription`; turning off removes it from hoshi
+(`DELETE`) before unsubscribing. Tapping a raid warning opens the cockpit, a finished build the
+check-in. Push needs the release build (the dev server has no service worker), hoshi with push
+on, and on iPhone the app added to the home screen. Signing out keeps the subscription; turn
+it off first on a shared device.
+
 ## Sign-in
 
 Paste a bearer token that `hoshi serve` accepts, or use **Identity login** when the

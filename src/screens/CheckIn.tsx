@@ -6,6 +6,7 @@ import { useSession } from "../session";
 import { Button, Callout, Dialog, Navbar, Section } from "../ui";
 import { type CheckIn as Model, compact, duration, readCheckIn } from "./checkInView";
 import { clockTime, FRESH_MS, useNow, useOnline } from "./live";
+import { PushSettings } from "./PushSettings";
 
 type Building = Model["buildings"][number];
 
@@ -186,6 +187,7 @@ const CheckInBody = ({
           <span className="ml-auto text-muted">›</span>
         </button>
       ))}
+      {!offline && <PushSettings />}
       {open && (
         <BuildSheet
           key={open.key}
