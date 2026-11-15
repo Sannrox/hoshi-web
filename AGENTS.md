@@ -11,7 +11,7 @@ Tailwind, Vitest, Oxlint/Oxfmt, pnpm. It mirrors
 - `src/api/`: HTTP client; `hoshi.gen.ts` is generated, never edit it by hand.
 - `src/screens/`: one file per screen; keep logic in testable modules next to them.
 
-Decisions: [docs/decisions/](docs/decisions/README.md). `CLAUDE.md` only points here;
+Decisions: [docs/decisions/](docs/decisions/README.md). `CLAUDE.md` is a symlink to this file;
 this file is canonical.
 
 ## Dependencies and Ownership
